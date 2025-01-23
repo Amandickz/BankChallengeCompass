@@ -8,21 +8,21 @@ public class BankCustomer {
     private String name;
     private Date date;
     private String cpf;
-    private String email;
+    private String phone;
 
-    public BankCustomer(String name, Date date, String cpf, String email) {
+    public BankCustomer(String name, Date date, String cpf, String phone) {
         this.name = name;
         this.date = date;
         this.cpf = cpf;
-        this.email = email;
+        this.phone = phone;
     }
 
-    public BankCustomer(int id, String name, Date date, String cpf, String email) {
+    public BankCustomer(int id, String name, Date date, String cpf, String phone) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.cpf = cpf;
-        this.email = email;
+        this.phone = phone;
     }
 
     public int getId() {
@@ -41,8 +41,8 @@ public class BankCustomer {
         return cpf;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPhone() {
+        return phone;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class BankCustomer {
                 ", name='" + name + '\'' +
                 ", date=" + date +
                 ", cpf='" + cpf + '\'' +
-                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
                 '}';
     }
 }
