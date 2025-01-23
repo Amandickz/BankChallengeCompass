@@ -51,4 +51,18 @@ public class Account extends BankCustomer{
                 ", customer=" + super.toString() +
                 '}';
     }
+
+    public boolean withdraw(float amount) {
+        if (amount > balance) {
+            return false;
+        } else {
+            balance -= amount;
+        }
+        return true;
+    }
+
+    public boolean deposit(float amount) {
+        balance += amount;
+        return true;
+    }
 }

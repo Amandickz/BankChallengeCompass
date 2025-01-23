@@ -1,22 +1,24 @@
 import classes.Account;
 import classes.Bank;
-import configurations.AccountConfiguration;
+import classes.BankStatement;
+import control.AccountConfiguration;
 
 import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
+
+    static ArrayList<Bank> bankListAccounts = new ArrayList<>();
+
     public static void main(String[] args) throws ParseException {
 
         Scanner scan = new Scanner(System.in);
 
         int opcao, check = 0;
-        ArrayList<Bank> bankListAccounts = new ArrayList<>();
         AccountConfiguration accountConfiguration = new AccountConfiguration();
 
         do {
@@ -98,19 +100,19 @@ public class Main {
                 }
             } else if (opcao == 2) {
 
-                System.out.print("Digite seu CPF: ");
-                String cpf = scan.next();
-                System.out.print("Senha: ");
-                String password = scan.next();
-
                 if (bankListAccounts.isEmpty()) {
-                    System.out.println("Nenhuma conta cadastrada no sistema!");
+                    System.out.println("\nNenhuma conta cadastrada no sistema!\n");
                 } else {
+                    System.out.print("\nDigite seu CPF: ");
+                    String cpf = scan.next();
+                    System.out.print("Senha: ");
+                    String password = scan.next();
+
                     for (Bank b : bankListAccounts) {
                         if (b.getAccount().getCpf().equals(cpf)) {
                             if (b.getAccount().getPassword().equals(password)) {
                                 System.out.println("\nTudo certo! Entrando na sua conta\n");
-                                loginMenu(scan, b);
+                                loginMenu(scan, b.getId());
                             }
                         }
                     }
@@ -127,26 +129,54 @@ public class Main {
         scan.close();
     }
 
-    public static void loginMenu(Scanner scan, Bank bank) {
+    private static void loginMenu(Scanner scan, int idBank) {
 
-        do {
+        for (Bank bank : bankListAccounts) {
+            if (bank.getId() == idBank) {
+                do {
+                    System.out.println("\nSeja bem-vindo " + bank.getAccount().getName());
+                    System.out.println("Saldo Atual");
+                    System.out.println("R$ " + bank.getAccount().getBalance());
+                    System.out.println("1 - Realizar Deposito");
+                    System.out.println("2 - Realizar Saque");
+                    System.out.println("3 - Realizar Transferência");
+                    System.out.println("4 - Visualizar Extrato");
+                    System.out.println("5 - Sair");
+                    int opcao = scan.nextInt();
 
-            System.out.println("Seja bem-vindo " + bank.getAccount().getName());
-            System.out.println("Saldo Atual");
-            System.out.println("R$ " + bank.getAccount().getBalance());
-            System.out.println("1 - Realizar Saque");
-            System.out.println("2 - Realizar Deposito");
-            System.out.println("3 - Realizar Transferência");
-            System.out.println("4 - Realizar Extrato");
-            System.out.println("5 - Sair");
-            int opcao = scan.nextInt();
+                    if (opcao == 5) {
+                        break;
+                    } else if (opcao == 1) {
+                        System.out.print("\nDigite o valor a ser depositado: ");
+                        float amount = scan.nextFloat();
+                        if (bank.getAccount().deposit(amount)){
+                            System.out.println("\nDepósito realizado com sucesso!\n");
+                            bank.addBankStatement(opcao,amount);
+                        } else {
+                            System.out.print("\nErro ao depositar! Por favor, verifique e tente novamente!\n");
+                        }
+                    } else if (opcao == 2) {
+                        System.out.print("\nDigite o valor a ser sacado: ");
+                        float amount = scan.nextFloat();
+                        if (bank.getAccount().withdraw(amount)){
+                            System.out.println("\nSaque realizado com sucesso!\n");
+                            bank.addBankStatement(opcao,amount);
+                        } else {
+                            System.out.print("\nErro ao saque! Por favor, verifique seu saldo e tente novamente!\n");
+                        }
+                    } else if (opcao == 4) {
+                        if (bank.getBankStatement().isEmpty()){
+                            System.out.print("\nNenhuma movimentação realizado\n");
+                        } else {
+                            for (BankStatement bS : bank.getBankStatement()){
+                                System.out.println(bS);
+                            }
+                        }
+                    }
 
-            if (opcao == 5) {
-                break;
+                } while (true);
             }
-
-        } while (true);
-
+        }
     }
 }
 
