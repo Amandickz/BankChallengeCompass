@@ -1,4 +1,4 @@
-package configurations;
+package control;
 
 import java.sql.Date;
 import java.text.ParseException;
