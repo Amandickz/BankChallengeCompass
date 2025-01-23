@@ -7,20 +7,15 @@ public class Account extends BankCustomer{
     private int id;
     private int numberAccount;
     private int type;
+    private String password;
     private float balance;
 
-    public Account(int idCustomer, String name, Date date, String cpf, String email, int id, int numberAccount, int type, float balance) {
-        super(idCustomer, name, date, cpf, email);
+    public Account(int id, String name, Date date, String cpf, String phone, int numberAccount, int type, String password, float balance) {
+        super(id, name, date, cpf, phone);
         this.id = id;
         this.numberAccount = numberAccount;
         this.type = type;
-        this.balance = balance;
-    }
-
-    public Account(int idCustomer, String name, Date date, String cpf, String email, int numberAccount, int type, float balance) {
-        super(idCustomer, name, date, cpf, email);
-        this.numberAccount = numberAccount;
-        this.type = type;
+        this.password = password;
         this.balance = balance;
     }
 
@@ -37,6 +32,10 @@ public class Account extends BankCustomer{
         return type;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public float getBalance() {
         return balance;
     }
@@ -47,7 +46,9 @@ public class Account extends BankCustomer{
                 "id=" + id +
                 ", numberAccount=" + numberAccount +
                 ", type=" + type +
+                ", password='" + password + '\'' +
                 ", balance=" + balance +
+                ", customer=" + super.toString() +
                 '}';
     }
 }

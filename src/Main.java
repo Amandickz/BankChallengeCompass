@@ -1,9 +1,11 @@
+import classes.Account;
 import classes.Bank;
+import configurations.AccountConfiguration;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -15,6 +17,7 @@ public class Main {
 
         int opcao;
         ArrayList<Bank> bankListAccounts = new ArrayList<>();
+        AccountConfiguration accountConfiguration = new AccountConfiguration();
 
         do {
 
@@ -25,17 +28,20 @@ public class Main {
             opcao = scan.nextInt();
 
             if (opcao == 1) {
+
                 System.out.print("Digite seu CPF: ");
-                String cpf = scan.nextLine();
+                String cpf = scan.next();
+
                 if(bankListAccounts.isEmpty()){
                     System.out.print("Digite seu Nome Completo: ");
-                    String nome = scan.nextLine();
-                    System.out.print("Digite seu E-mail: ");
-                    String email = scan.nextLine();
+                    String nome = scan.next();
+                    scan.nextLine();
+                    System.out.print("Digite seu Telfone: ");
+                    String phone = scan.next();
                     System.out.print("Digite sua Data de Nascimento (dd/MM/yyyy): ");
-                    String dataNascimento = scan.nextLine();
+                    String dataNascimento = scan.next();
 
-                    System.out.println("Okay! Tudo Certo! Vamos continuar...");
+                    System.out.println("\nOkay! Tudo Certo! Vamos continuar...\n");
 
                     System.out.println("Selecione o tipo de conta que você deseja abrir: ");
                     System.out.println("1 - Conta Corrente");
@@ -44,12 +50,51 @@ public class Main {
                     System.out.print("Opção: ");
                     int opConta = scan.nextInt();
 
-                    System.out.println("\nCriando a sua conta...");
+                    System.out.println("\nCriando a sua conta...\n");
 
+                    int numberAccount = accountConfiguration.createNumberAccount();
 
+                    System.out.print("Por favor, digite uma senha: ");
+                    String password = scan.next();
 
+                    System.out.println("\nChecando a senha... Vamos proceguir!\n");
+
+                    System.out.print("Deseja fazer um depósito inicial? (s/n) ");
+                    char deposit = scan.next().charAt(0);
+
+                    float value = 0;
+
+                    if (deposit == 's') {
+                        System.out.print("Digite o valor a ser depositado: ");
+                        value = scan.nextFloat();
+                    }
+
+                    int idAccount;
+
+                    if (bankListAccounts.isEmpty()) {
+                        idAccount = 0;
+                    } else {
+                        idAccount = bankListAccounts.size() + 1;
+                    }
+
+                    Date dataNascimentoSQL = accountConfiguration.dateFormatStringtoSQL(dataNascimento);
+
+                    Account account = new Account(idAccount,nome,dataNascimentoSQL,cpf,phone,numberAccount,opConta,password,value);
+                    System.out.println(account.toString());
+                    bankListAccounts.add(new Bank(idAccount, account));
+                    System.out.println("Cheguei até aqui! Quantidade de Contas: " + bankListAccounts.size());
+
+                    for (Bank b : bankListAccounts) {
+                        System.out.println(b);
+                    }
 
                 }
+            } else if (opcao == 2) {
+
+            } else if (opcao == 3) {
+                break;
+            } else {
+                System.out.println("Opção incorreta! Tente novamente\n");
             }
 
         } while (opcao != 3);
