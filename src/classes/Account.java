@@ -6,10 +6,10 @@ public class Account extends BankCustomer{
 
     private int id;
     private int numberAccount;
-    private char type;
+    private int type;
     private float balance;
 
-    public Account(int idCustomer, String name, Date date, String cpf, String email, int id, int numberAccount, char type, float balance) {
+    public Account(int idCustomer, String name, Date date, String cpf, String email, int id, int numberAccount, int type, float balance) {
         super(idCustomer, name, date, cpf, email);
         this.id = id;
         this.numberAccount = numberAccount;
@@ -17,7 +17,7 @@ public class Account extends BankCustomer{
         this.balance = balance;
     }
 
-    public Account(int idCustomer, String name, Date date, String cpf, String email, int numberAccount, char type, float balance) {
+    public Account(int idCustomer, String name, Date date, String cpf, String email, int numberAccount, int type, float balance) {
         super(idCustomer, name, date, cpf, email);
         this.numberAccount = numberAccount;
         this.type = type;
@@ -33,7 +33,7 @@ public class Account extends BankCustomer{
         return numberAccount;
     }
 
-    public char getType() {
+    public int getType() {
         return type;
     }
 
