@@ -13,6 +13,14 @@ public class Bank {
         this.account = account;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
     @Override
     public String toString() {
         return "Bank{" +

@@ -15,7 +15,7 @@ public class Main {
 
         Scanner scan = new Scanner(System.in);
 
-        int opcao;
+        int opcao, check = 0;
         ArrayList<Bank> bankListAccounts = new ArrayList<>();
         AccountConfiguration accountConfiguration = new AccountConfiguration();
 
@@ -29,14 +29,21 @@ public class Main {
 
             if (opcao == 1) {
 
-                System.out.print("Digite seu CPF: ");
+                System.out.print("\nDigite seu CPF: ");
                 String cpf = scan.next();
 
-                if(bankListAccounts.isEmpty()){
+                for (Bank b : bankListAccounts) {
+                    if (b.getAccount().getCpf().equals(cpf)) {
+                        check++;
+                    }
+                }
+
+                scan.nextLine();
+
+                if(check == 0) {
                     System.out.print("Digite seu Nome Completo: ");
-                    String nome = scan.next();
-                    scan.nextLine();
-                    System.out.print("Digite seu Telfone: ");
+                    String nome = scan.nextLine();
+                    System.out.print("Digite seu Telefone: ");
                     String phone = scan.next();
                     System.out.print("Digite sua Data de Nascimento (dd/MM/yyyy): ");
                     String dataNascimento = scan.next();
@@ -80,16 +87,34 @@ public class Main {
                     Date dataNascimentoSQL = accountConfiguration.dateFormatStringtoSQL(dataNascimento);
 
                     Account account = new Account(idAccount,nome,dataNascimentoSQL,cpf,phone,numberAccount,opConta,password,value);
-                    System.out.println(account.toString());
                     bankListAccounts.add(new Bank(idAccount, account));
-                    System.out.println("Cheguei até aqui! Quantidade de Contas: " + bankListAccounts.size());
 
                     for (Bank b : bankListAccounts) {
-                        System.out.println(b);
+                        System.out.println("\n" + b + "\n");
                     }
 
+                } else {
+                    System.out.println("\nCPF já cadastrado, por favor, realize o login na sua conta.\n");
                 }
             } else if (opcao == 2) {
+
+                System.out.print("Digite seu CPF: ");
+                String cpf = scan.next();
+                System.out.print("Senha: ");
+                String password = scan.next();
+
+                if (bankListAccounts.isEmpty()) {
+                    System.out.println("Nenhuma conta cadastrada no sistema!");
+                } else {
+                    for (Bank b : bankListAccounts) {
+                        if (b.getAccount().getCpf().equals(cpf)) {
+                            if (b.getAccount().getPassword().equals(password)) {
+                                System.out.println("\nTudo certo! Entrando na sua conta\n");
+                                loginMenu(scan, b);
+                            }
+                        }
+                    }
+                }
 
             } else if (opcao == 3) {
                 break;
@@ -100,6 +125,28 @@ public class Main {
         } while (opcao != 3);
 
         scan.close();
+    }
+
+    public static void loginMenu(Scanner scan, Bank bank) {
+
+        do {
+
+            System.out.println("Seja bem-vindo " + bank.getAccount().getName());
+            System.out.println("Saldo Atual");
+            System.out.println("R$ " + bank.getAccount().getBalance());
+            System.out.println("1 - Realizar Saque");
+            System.out.println("2 - Realizar Deposito");
+            System.out.println("3 - Realizar Transferência");
+            System.out.println("4 - Realizar Extrato");
+            System.out.println("5 - Sair");
+            int opcao = scan.nextInt();
+
+            if (opcao == 5) {
+                break;
+            }
+
+        } while (true);
+
     }
 }
 
