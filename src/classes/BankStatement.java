@@ -48,4 +48,11 @@ public class BankStatement {
         }
         return amount;
     }
+
 }
+
+/*tipos de padrão de function:
+* 1 - Depósito
+* 2 - Saque
+* 3 - Tranferência - Cliente enviou
+* 4 - Tranferência - Cliente recebidor (cliente do banco)*/

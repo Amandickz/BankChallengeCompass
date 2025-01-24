@@ -65,4 +65,14 @@ public class Account extends BankCustomer{
         balance += amount;
         return true;
     }
+
+    public boolean transfer(Bank client, Bank destination, float amount) {
+        client.getAccount().withdraw(amount);
+        destination.getAccount().deposit(amount);
+
+        client.newBankStatement(3, amount);
+        destination.newBankStatement(4, amount);
+
+        return true;
+    }
 }
