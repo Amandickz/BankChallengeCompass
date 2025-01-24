@@ -1,6 +1,5 @@
 package classes;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 public class Bank {
@@ -40,7 +39,7 @@ public class Bank {
                 '}';
     }
 
-    public boolean addBankStatement(int function, float amount) {
+    public boolean newBankStatement(int function, float amount) {
         int id;
         if (bankStatement.isEmpty()){
             id = 0;

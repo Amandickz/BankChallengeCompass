@@ -78,12 +78,14 @@ public class Main {
                         value = scan.nextFloat();
                     }
 
-                    int idAccount;
+                    int idAccount = 0;
 
                     if (bankListAccounts.isEmpty()) {
-                        idAccount = 0;
+                        idAccount = 1;
                     } else {
-                        idAccount = bankListAccounts.size() + 1;
+                        for (Bank b : bankListAccounts) {
+                            idAccount = b.getAccount().getId() + 1;
+                        }
                     }
 
                     Date dataNascimentoSQL = accountConfiguration.dateFormatStringtoSQL(dataNascimento);
@@ -91,13 +93,19 @@ public class Main {
                     Account account = new Account(idAccount,nome,dataNascimentoSQL,cpf,phone,numberAccount,opConta,password,value);
                     bankListAccounts.add(new Bank(idAccount, account));
 
+                    System.out.println("\n");
+
                     for (Bank b : bankListAccounts) {
-                        System.out.println("\n" + b + "\n");
+                        System.out.println(b);
                     }
+
+                    System.out.println("\n");
 
                 } else {
                     System.out.println("\nCPF já cadastrado, por favor, realize o login na sua conta.\n");
                 }
+
+                check = 0;
             } else if (opcao == 2) {
 
                 if (bankListAccounts.isEmpty()) {
@@ -110,6 +118,7 @@ public class Main {
 
                     for (Bank b : bankListAccounts) {
                         if (b.getAccount().getCpf().equals(cpf)) {
+                            System.out.println("\nConta Localizada!\n");
                             if (b.getAccount().getPassword().equals(password)) {
                                 System.out.println("\nTudo certo! Entrando na sua conta\n");
                                 loginMenu(scan, b.getId());
@@ -141,17 +150,18 @@ public class Main {
                     System.out.println("2 - Realizar Saque");
                     System.out.println("3 - Realizar Transferência");
                     System.out.println("4 - Visualizar Extrato");
-                    System.out.println("5 - Sair");
+                    System.out.println("5 - Visualizar Saldo");
+                    System.out.println("6 - Sair");
                     int opcao = scan.nextInt();
 
-                    if (opcao == 5) {
+                    if (opcao == 6) {
                         break;
                     } else if (opcao == 1) {
                         System.out.print("\nDigite o valor a ser depositado: ");
                         float amount = scan.nextFloat();
                         if (bank.getAccount().deposit(amount)){
                             System.out.println("\nDepósito realizado com sucesso!\n");
-                            bank.addBankStatement(opcao,amount);
+                            bank.newBankStatement(opcao,amount);
                         } else {
                             System.out.print("\nErro ao depositar! Por favor, verifique e tente novamente!\n");
                         }
@@ -160,10 +170,80 @@ public class Main {
                         float amount = scan.nextFloat();
                         if (bank.getAccount().withdraw(amount)){
                             System.out.println("\nSaque realizado com sucesso!\n");
-                            bank.addBankStatement(opcao,amount);
+                            bank.newBankStatement(opcao,amount);
                         } else {
                             System.out.print("\nErro ao saque! Por favor, verifique seu saldo e tente novamente!\n");
                         }
+                    } else if (opcao == 3) {
+                        System.out.println("\nA Tranferência vai ser: ");
+                        System.out.println("1 - Entre contas do Banco");
+                        System.out.println("2 - Para contas externas");
+                        int opTranfer = scan.nextInt();
+
+                        if (opTranfer == 1) {
+                            Bank accountRecive = null;
+                            System.out.print("\nDigite o número da conta que irá receber a transferência: ");
+                            int accountNumber = scan.nextInt();
+                            for (Bank b : bankListAccounts) {
+                                if (b.getAccount().getNumberAccount() == accountNumber) {
+                                    accountRecive = new Bank(b.getId(), b.getAccount());
+                                    System.out.print("Digite o valor que você deseja transferir: R$ ");
+                                    float amount = scan.nextFloat();
+
+                                    if(bank.getAccount().getBalance() >= amount){
+                                        System.out.print("Confimar transferência da sua conta para\n" +
+                                                b.getAccount().getName() + "\n(s/n) ");
+                                        char confirm = scan.next().charAt(0);
+                                        if (confirm == 's') {
+                                            if (bank.getAccount().internalTransfer(bank,b,amount)){
+                                                System.out.println("\nTransferência realizada com sucesso realizada com sucesso!\n");
+                                            } else {
+                                                System.out.println("\nErro ao realizar a trasnferência");
+                                            }
+                                        }
+
+                                        for (Bank accountAtualization : bankListAccounts) {
+                                            System.out.println(accountAtualization.getBankStatement());
+                                        }
+
+                                    } else {
+                                        System.out.print("\nErro ao transferir o valor. Saldo Indisponível!\n");
+                                    }
+                                }
+                            }
+
+                            if(accountRecive == null){
+                                System.out.println("\nConta digitada não localizada." +
+                                        "\nPor favor, verifique os dados e tente novamente.\n");
+                            }
+                        } else {
+                            System.out.print("\nDigite o CPF da conta que irá receber a transferência: ");
+                            String cpf = scan.next();
+
+                            System.out.print("Digite o valor que você deseja transferir: R$ ");
+                            float amount = scan.nextFloat();
+
+                            if(bank.getAccount().getBalance() >= amount){
+                                System.out.print("Confimar transferência da sua conta para o CPF\n" +
+                                        cpf + "\n(s/n) ");
+                                char confirm = scan.next().charAt(0);
+                                if (confirm == 's') {
+                                    if (bank.getAccount().externalTransfer(bank,amount)){
+                                        System.out.println("\nTransferência realizada com sucesso realizada com sucesso!\n");
+                                    } else {
+                                        System.out.println("\nErro ao realizar a trasnferência");
+                                    }
+                                }
+
+                                for (Bank accountAtualization : bankListAccounts) {
+                                    System.out.println(accountAtualization.getBankStatement());
+                                }
+
+                            } else {
+                                System.out.print("\nErro ao transferir o valor. Saldo Indisponível!\n");
+                            }
+                        }
+
                     } else if (opcao == 4) {
                         if (bank.getBankStatement().isEmpty()){
                             System.out.print("\nNenhuma movimentação realizado\n");
@@ -172,6 +252,13 @@ public class Main {
                                 System.out.println(bS);
                             }
                         }
+                    } else if (opcao == 5) {
+                        System.out.println("\nSaldo Atual: " + bank.getAccount().getBalance());
+                        float amountTotal = 0;
+                        for (BankStatement bS : bank.getBankStatement()){
+                            amountTotal += bS.getAmount();
+                        }
+                        System.out.println("Movimentações do dia: R$ " + amountTotal);
                     }
 
                 } while (true);

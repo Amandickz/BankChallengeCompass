@@ -1,6 +1,7 @@
 package classes;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class BankStatement {
 
@@ -48,4 +49,16 @@ public class BankStatement {
         }
         return amount;
     }
+
+    protected String dataConvertida(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(date);
+    }
+
 }
+
+/*tipos de padrão de function:
+* 1 - Depósito
+* 2 - Saque
+* 3 - Tranferência - Cliente enviou
+* 4 - Tranferência - Cliente recebidor (cliente do banco)*/
