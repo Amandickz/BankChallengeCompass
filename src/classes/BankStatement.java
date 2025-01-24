@@ -1,6 +1,7 @@
 package classes;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class BankStatement {
 
@@ -47,6 +48,11 @@ public class BankStatement {
             amount *= -1;
         }
         return amount;
+    }
+
+    protected String dataConvertida(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(date);
     }
 
 }

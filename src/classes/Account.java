@@ -66,13 +66,19 @@ public class Account extends BankCustomer{
         return true;
     }
 
-    public boolean transfer(Bank client, Bank destination, float amount) {
+    public boolean internalTransfer(Bank client, Bank destination, float amount) {
         client.getAccount().withdraw(amount);
         destination.getAccount().deposit(amount);
 
         client.newBankStatement(3, amount);
         destination.newBankStatement(4, amount);
 
+        return true;
+    }
+
+    public boolean externalTransfer(Bank client, float amount) {
+        client.getAccount().withdraw(amount);
+        client.newBankStatement(3, amount);
         return true;
     }
 }
