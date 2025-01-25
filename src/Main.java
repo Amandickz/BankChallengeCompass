@@ -24,6 +24,8 @@ public class Main {
 
         if(cpfVerification.verification(cpf)){
             System.out.println("Your CPF has been successfully verified.");
+            String newCPF = cpfVerification.convertionCPF(cpf);
+            System.out.println("Your new CPF is: " + newCPF);
         } else {
             System.out.println("Your CPF have something wrong.");
         }
