@@ -60,6 +60,8 @@ public class PhoneVerification {
             return false;
         } else if (phone.equals("9999999999") || phone.equals("99999999999") || phone.equals("9999999999999")) {
             return false;
+        } else if (phone.equals("1234567890") || phone.equals("0123456789")) {
+            return false;
         }
         return true;
     }
