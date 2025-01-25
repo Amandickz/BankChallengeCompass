@@ -19,102 +19,98 @@ public class Main {
 
         Scanner scan = new Scanner(System.in);
 
-        CPFVerification cpfVerification = new CPFVerification();
-        String cpf = scan.nextLine();
-
-        if(cpfVerification.verification(cpf)){
-            System.out.println("Your CPF has been successfully verified.");
-            String newCPF = cpfVerification.convertionCPF(cpf);
-            System.out.println("Your new CPF is: " + newCPF);
-        } else {
-            System.out.println("Your CPF have something wrong.");
-        }
-
-        /*int opcao, check = 0;
+        int opcao, check = 0;
         AccountConfiguration accountConfiguration = new AccountConfiguration();
+        CPFVerification cpfVerification = new CPFVerification();
 
         do {
 
-            System.out.println("Selecione a opção: ");
+            System.out.println("\nSelecione a opção: ");
             System.out.println("1 - Criar Conta");
             System.out.println("2 - Logar Conta");
             System.out.println("3 - Sair");
             opcao = scan.nextInt();
 
             if (opcao == 1) {
+                String cpf = new String();
 
                 System.out.print("\nDigite seu CPF: ");
-                String cpf = scan.next();
-
-                for (Bank b : bankListAccounts) {
-                    if (b.getAccount().getCpf().equals(cpf)) {
-                        check++;
-                    }
-                }
-
-                scan.nextLine();
-
-                if(check == 0) {
-                    System.out.print("Digite seu Nome Completo: ");
-                    String nome = scan.nextLine();
-                    System.out.print("Digite seu Telefone: ");
-                    String phone = scan.next();
-                    System.out.print("Digite sua Data de Nascimento (dd/MM/yyyy): ");
-                    String dataNascimento = scan.next();
-
-                    System.out.println("\nOkay! Tudo Certo! Vamos continuar...\n");
-
-                    System.out.println("Selecione o tipo de conta que você deseja abrir: ");
-                    System.out.println("1 - Conta Corrente");
-                    System.out.println("2 - Conta Poupanca");
-                    System.out.println("3 - Conta Salário");
-                    System.out.print("Opção: ");
-                    int opConta = scan.nextInt();
-
-                    System.out.println("\nCriando a sua conta...\n");
-
-                    int numberAccount = accountConfiguration.createNumberAccount();
-
-                    System.out.print("Por favor, digite uma senha: ");
-                    String password = scan.next();
-
-                    System.out.println("\nChecando a senha... Vamos proceguir!\n");
-
-                    System.out.print("Deseja fazer um depósito inicial? (s/n) ");
-                    char deposit = scan.next().charAt(0);
-
-                    float value = 0;
-
-                    if (deposit == 's') {
-                        System.out.print("Digite o valor a ser depositado: ");
-                        value = scan.nextFloat();
-                    }
-
-                    int idAccount = 0;
-
-                    if (bankListAccounts.isEmpty()) {
-                        idAccount = 1;
-                    } else {
-                        for (Bank b : bankListAccounts) {
-                            idAccount = b.getAccount().getId() + 1;
+                String digitCpf = scan.next();
+                if(cpfVerification.verification(digitCpf)){
+                    cpf = cpfVerification.convertionCPF(digitCpf);
+                    for (Bank b : bankListAccounts) {
+                        if (b.getAccount().getCpf().equals(digitCpf)) {
+                            check++;
                         }
                     }
 
-                    Date dataNascimentoSQL = accountConfiguration.dateFormatStringtoSQL(dataNascimento);
+                    scan.nextLine();
 
-                    Account account = new Account(idAccount,nome,dataNascimentoSQL,cpf,phone,numberAccount,opConta,password,value);
-                    bankListAccounts.add(new Bank(idAccount, account));
+                    if(check == 0) {
+                        System.out.print("Digite seu Nome Completo: ");
+                        String nome = scan.nextLine();
+                        System.out.print("Digite seu Telefone: ");
+                        String phone = scan.next();
+                        System.out.print("Digite sua Data de Nascimento (dd/MM/yyyy): ");
+                        String dataNascimento = scan.next();
 
-                    System.out.println("\n");
+                        System.out.println("\nOkay! Tudo Certo! Vamos continuar...\n");
 
-                    for (Bank b : bankListAccounts) {
-                        System.out.println(b);
+                        System.out.println("Selecione o tipo de conta que você deseja abrir: ");
+                        System.out.println("1 - Conta Corrente");
+                        System.out.println("2 - Conta Poupanca");
+                        System.out.println("3 - Conta Salário");
+                        System.out.print("Opção: ");
+                        int opConta = scan.nextInt();
+
+                        System.out.println("\nCriando a sua conta...\n");
+
+                        int numberAccount = accountConfiguration.createNumberAccount();
+
+                        System.out.print("Por favor, digite uma senha: ");
+                        String password = scan.next();
+
+                        System.out.println("\nChecando a senha... Vamos proceguir!\n");
+
+                        System.out.print("Deseja fazer um depósito inicial? (s/n) ");
+                        char deposit = scan.next().charAt(0);
+
+                        float value = 0;
+
+                        if (deposit == 's') {
+                            System.out.print("Digite o valor a ser depositado: ");
+                            value = scan.nextFloat();
+                        }
+
+                        int idAccount = 0;
+
+                        if (bankListAccounts.isEmpty()) {
+                            idAccount = 1;
+                        } else {
+                            for (Bank b : bankListAccounts) {
+                                idAccount = b.getAccount().getId() + 1;
+                            }
+                        }
+
+                        Date dataNascimentoSQL = accountConfiguration.dateFormatStringtoSQL(dataNascimento);
+
+                        Account account = new Account(idAccount,nome,dataNascimentoSQL,cpf,phone,numberAccount,opConta,password,value);
+                        bankListAccounts.add(new Bank(idAccount, account));
+
+                        System.out.println("\n");
+
+                        for (Bank b : bankListAccounts) {
+                            System.out.println(b);
+                        }
+
+                        System.out.println("\n");
+
+                    } else {
+                        System.out.println("\nCPF já cadastrado, por favor, realize o login na sua conta.\n");
                     }
 
-                    System.out.println("\n");
-
                 } else {
-                    System.out.println("\nCPF já cadastrado, por favor, realize o login na sua conta.\n");
+                    System.out.println("Your CPF have something wrong.");
                 }
 
                 check = 0;
@@ -145,7 +141,7 @@ public class Main {
                 System.out.println("Opção incorreta! Tente novamente\n");
             }
 
-        } while (opcao != 3);*/
+        } while (opcao != 3);
 
         scan.close();
     }
