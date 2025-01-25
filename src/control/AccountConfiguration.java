@@ -10,8 +10,7 @@ public class AccountConfiguration {
     public Date dateFormatStringtoSQL(String date) throws ParseException {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        java.util.Date convertionDate1 = new java.util.Date();
-        convertionDate1 = sdf.parse(date);
+        java.util.Date convertionDate1 = sdf.parse(date);
 
         Date convetionDate2 = new Date(convertionDate1.getTime());
 
