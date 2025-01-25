@@ -18,6 +18,16 @@ public class CPFVerification {
             return false;
         }
 
+        if(!digitVerification1(cpf)){
+            System.out.println("CPF has a digit verification wrong.");
+            return false;
+        } else {
+            if (!digitVerification2(cpf)){
+                System.out.println("CPF has a last digit verification wrong.");
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -61,6 +71,49 @@ public class CPFVerification {
                 }
             }
         } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected boolean digitVerification1(String cpf) {
+
+        int total = 0, cont = 10;
+
+        for (int i = 0; i < 9; i++) {
+            int number = Integer.parseInt(cpf.substring(i, i + 1));
+            total += number * cont;
+            cont--;
+        }
+
+        if ((total * 10) % 11 == 10) {
+            if(Integer.parseInt(cpf.substring(9, 9 + 1)) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            int rest = (total * 10) % 11;
+            if(Integer.parseInt(cpf.substring(9, 9 + 1)) != rest) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected boolean digitVerification2(String cpf) {
+
+        int total = 0, cont = 11;
+
+        for (int i = 0; i < 10; i++) {
+            int number = Integer.parseInt(cpf.substring(i, i + 1));
+            total += number * cont;
+            cont--;
+        }
+
+        if ((total * 10) % 11 != Integer.parseInt(cpf.substring(10, 10 + 1))) {
             return false;
         }
 
