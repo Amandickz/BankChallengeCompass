@@ -2,6 +2,7 @@ import classes.Account;
 import classes.Bank;
 import classes.BankStatement;
 import control.AccountConfiguration;
+import verifications.CPFVerification;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -18,7 +19,16 @@ public class Main {
 
         Scanner scan = new Scanner(System.in);
 
-        int opcao, check = 0;
+        CPFVerification cpfVerification = new CPFVerification();
+        String cpf = scan.nextLine();
+
+        if(cpfVerification.verification(cpf)){
+            System.out.println("Your CPF has been successfully verified.");
+        } else {
+            System.out.println("Your CPF have something wrong.");
+        }
+
+        /*int opcao, check = 0;
         AccountConfiguration accountConfiguration = new AccountConfiguration();
 
         do {
@@ -133,7 +143,7 @@ public class Main {
                 System.out.println("Opção incorreta! Tente novamente\n");
             }
 
-        } while (opcao != 3);
+        } while (opcao != 3);*/
 
         scan.close();
     }
