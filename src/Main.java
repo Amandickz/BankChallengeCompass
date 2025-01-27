@@ -43,7 +43,7 @@ public class Main {
                 if(cpfVerification.verification(digitedCpf)){
                     cpf = cpfVerification.convertionCPF(digitedCpf);
                     for (Bank b : bankListAccounts) {
-                        if (b.getAccount().getCpf().equals(digitedCpf)) {
+                        if (b.getAccount().getCpf().equals(cpf)) {
                             check++;
                         }
                     }
