@@ -4,24 +4,17 @@ import java.sql.Date;
 
 public class Account extends BankCustomer{
 
-    private int id;
     private int numberAccount;
     private int type;
     private String password;
     private float balance;
 
-    public Account(int id, String name, Date date, String cpf, String phone, int numberAccount, int type, String password, float balance) {
-        super(id, name, date, cpf, phone);
-        this.id = id;
+    public Account(String name, Date date, String cpf, String phone, int numberAccount, int type, String password, float balance) {
+        super(name, date, cpf, phone);
         this.numberAccount = numberAccount;
         this.type = type;
         this.password = password;
         this.balance = balance;
-    }
-
-    @Override
-    public int getId() {
-        return id;
     }
 
     public int getNumberAccount() {
@@ -43,7 +36,6 @@ public class Account extends BankCustomer{
     @Override
     public String toString() {
         return "Account{" +
-                "id=" + id +
                 ", numberAccount=" + numberAccount +
                 ", type=" + type +
                 ", password='" + password + '\'' +
