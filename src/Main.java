@@ -1,7 +1,4 @@
-import classes.Account;
-import classes.Bank;
-import classes.BankCustomer;
-import classes.BankStatement;
+import classes.*;
 import control.AccountConfiguration;
 import db.DBManipulation;
 import verifications.CPFVerification;
@@ -11,6 +8,7 @@ import verifications.PhoneVerification;
 import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -275,8 +273,21 @@ public class Main {
                     }
                     break;
                 case 5:
-                    // ToDo...
                     System.out.println("Bank Statement.");
+                    ArrayList<Transitions> transitions = dbManipulation.returnTransitions(bank.getId());
+                    ArrayList<BankStatement> bankStatements = new ArrayList<>();
+                    if(!transitions.isEmpty()){
+                        for (Transitions transition : transitions) {
+                            BankStatement bankStatement = dbManipulation.returnBankStatement(transition.getIdBankStatement());
+                            bankStatements.add(bankStatement);
+                        }
+
+                        for (BankStatement bankStatement : bankStatements) {
+                            System.out.println(bankStatement.extract(bankStatement));
+                        }
+                    } else {
+                        System.out.println("Any transitions not found.");
+                    }
                     break;
                 case 0:
                     System.out.println("Exiting...");

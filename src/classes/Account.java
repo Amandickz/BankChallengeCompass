@@ -73,7 +73,6 @@ public class Account extends BankCustomer{
 
     public boolean externalTransfer(Bank client, float amount) {
         client.getAccount().withdraw(amount);
-        client.newBankStatement(3, amount);
         return true;
     }
 }
