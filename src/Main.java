@@ -174,7 +174,6 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    // ToDo...
                     System.out.print("Digit the amount to deposit: ");
                     amount = scanner.nextFloat();
                     if(account.deposit(amount)) {
@@ -186,8 +185,18 @@ public class Main {
                     System.out.println("Deposit ok!");
                     break;
                 case 2:
-                    // ToDo...
-                    System.out.println("Withdraw.");
+                    System.out.print("Digit the amount to withdraw: ");
+                    amount = scanner.nextFloat();
+                    if (bank.getAccount().withdraw(amount)){
+                        dbManipulation.alterBalanceAccount(account);
+                        BankStatement bankStatement = new BankStatement(2,amount);
+                        int idBankStatement = dbManipulation.insertBankStatement(bankStatement);
+                        dbManipulation.insertTransaction(bank.getId(),idBankStatement);
+                        System.out.println("Withdraw ok!");
+                    } else {
+                        System.out.println("Withdraw fail! Please check your balance" +
+                                "\n and try again.");
+                    }
                     break;
                 case 3:
                     // ToDo...
