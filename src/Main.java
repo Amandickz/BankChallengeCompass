@@ -84,6 +84,7 @@ public class Main {
     public static void bankMenu(Scanner scanner, Account account) {
         DBManipulation dbManipulation = new DBManipulation();
         Bank bank = dbManipulation.returnBankAccount(account);
+        CPFVerification cpfVerification = new CPFVerification();
         boolean running = true;
         float amount = 0;
 
@@ -177,29 +178,36 @@ public class Main {
                                 System.out.print("\nSomenthing wrong. Check your balance and try again!\n");
                             }
                         } else {
-                            System.out.println("\nAccount don't found. Please try again.");
+                            System.out.println("\nAccount not found. Please try again.");
                         }
                     } else {
                         System.out.print("Enter CPF to transfer: ");
                         String cpf = scanner.next();
-                        System.out.println("Digit the amount to transfer: ");
-                        amount = scanner.nextFloat();
 
-                        if(bank.getAccount().getBalance() >= amount){
-                            System.out.print("Confirm you transfer with \n" +
-                                    cpf + " of value R$ " + amount + "(y/n) ");
-                            char confirm = scanner.next().charAt(0);
-                            if (confirm == 'y') {
-                                if (bank.getAccount().externalTransfer(bank,amount)){
-                                    dbManipulation.alterBalanceAccount(bank.getAccount());
-                                    BankStatement bankStatement = new BankStatement(3,amount);
-                                    int idBankStatement = dbManipulation.insertBankStatement(bankStatement);
-                                    dbManipulation.insertTransaction(bank.getId(),idBankStatement);
-                                    System.out.println("Bank Account transfer ok!");
-                                } else {
-                                    System.out.println("\nSomenthing wrong. Please try again.");
+                        if(cpfVerification.verification(cpf)){
+                            String cpfConverted = cpfVerification.convertionCPF(cpf);
+
+                            System.out.print("Digit the amount to transfer: ");
+                            amount = scanner.nextFloat();
+
+                            if(bank.getAccount().getBalance() >= amount){
+                                System.out.print("Confirm you transfer with \n" +
+                                        cpf + " of value R$ " + amount + "\n(y/n) ");
+                                char confirm = scanner.next().charAt(0);
+                                if (confirm == 'y') {
+                                    if (bank.getAccount().externalTransfer(bank,amount)){
+                                        dbManipulation.alterBalanceAccount(bank.getAccount());
+                                        BankStatement bankStatement = new BankStatement(3,amount);
+                                        int idBankStatement = dbManipulation.insertBankStatement(bankStatement);
+                                        dbManipulation.insertTransaction(bank.getId(),idBankStatement);
+                                        System.out.println("Bank Account transfer ok!");
+                                    } else {
+                                        System.out.println("\nSomenthing wrong. Please try again.");
+                                    }
                                 }
                             }
+                        } else {
+                            System.out.println("CPF was incorrect. Please try again.");
                         }
                     }
                     break;
