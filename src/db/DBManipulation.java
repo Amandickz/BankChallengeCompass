@@ -428,4 +428,31 @@ public class DBManipulation {
         }
     }
 
+    public boolean foundCPF(String cpf) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from bankcustomer where cpf = '" + cpf + "'");
+
+            if (rs != null){
+                return true;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return false;
+    }
+
 }

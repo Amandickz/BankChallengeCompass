@@ -1,7 +1,9 @@
 import classes.Account;
 import classes.Bank;
+import classes.BankCustomer;
 import classes.BankStatement;
 import control.AccountConfiguration;
+import db.DBManipulation;
 import verifications.CPFVerification;
 import verifications.DateVerification;
 import verifications.PhoneVerification;
@@ -16,13 +18,17 @@ import java.util.Scanner;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    static ArrayList<Bank> bankListAccounts = new ArrayList<>();
+    //static ArrayList<Bank> bankListAccounts = new ArrayList<>();
 
     public static void main(String[] args) throws ParseException {
 
-        Scanner scan = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+        mainMenu(scanner);
 
-        int option, check = 0;
+        scanner.close();
+        System.out.println("Application closed");
+
+        /*int option, check = 0;
         CPFVerification cpfVerification = new CPFVerification();
 
         do {
@@ -34,12 +40,12 @@ public class Main {
             System.out.println("=============================");
             System.out.print("Choose an option: ");
 
-            option = scan.nextInt();
+            option = scanner.nextInt();
 
             if (option == 1) {
                 String cpf;
                 System.out.print("\nType your CPF: ");
-                String digitedCpf = scan.next();
+                String digitedCpf = scanner.next();
                 if(cpfVerification.verification(digitedCpf)){
                     cpf = cpfVerification.convertionCPF(digitedCpf);
                     for (Bank b : bankListAccounts) {
@@ -47,9 +53,9 @@ public class Main {
                             check++;
                         }
                     }
-                    scan.nextLine();
+                    scanner.nextLine();
                     if(check == 0) {
-                        accountOpening(scan,cpf);
+                        accountOpening(scanner,cpf);
                     } else {
                         System.out.println("\nAccount with this CPF was founded." +
                                 "\nPlease, make a login in your account.\n");
@@ -64,16 +70,16 @@ public class Main {
                     System.out.println("\nAny account founded in the registers.\n");
                 } else {
                     System.out.print("\nType your CPF: ");
-                    String cpf = scan.next();
+                    String cpf = scanner.next();
 
                     cpf = cpfVerification.convertionCPF(cpf);
 
                     for (Bank b : bankListAccounts) {
                         if (b.getAccount().getCpf().equals(cpf)) {
                             System.out.print("Password Account: ");
-                            String password = scan.next();
+                            String password = scanner.next();
                             if (b.getAccount().getPassword().equals(password)) {
-                                loginMenu(scan, b.getId());
+                                loginMenu(scanner, b.getId());
                             }
                         }
                     }
@@ -84,12 +90,168 @@ public class Main {
                 System.out.println("Invalid option. Please try again.\n");
             }
 
-        } while (option != 3);
+        } while (option != 3);*/
 
-        scan.close();
+
     }
 
-    private static void accountOpening(Scanner scan, String cpf) throws ParseException {
+    public static void mainMenu(Scanner scanner) throws ParseException {
+        CPFVerification cpfVerification = new CPFVerification();
+        DBManipulation db = new DBManipulation();
+        boolean running = true;
+
+        while (running) {
+            System.out.println("========= Main Menu =========");
+            System.out.println("|| 1. Login                ||");
+            System.out.println("|| 2. Account Opening      ||");
+            System.out.println("|| 0. Exit                 ||");
+            System.out.println("=============================");
+            System.out.print("Choose an option: ");
+
+            int option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    bankMenu(scanner);
+                    return;
+                case 2:
+                    System.out.print("Digit your CPF: ");
+                    String digitedCpf = scanner.next();
+                    String cpf = cpfVerification.convertionCPF(digitedCpf);
+                    if(db.foundCPF(cpf)){
+                        openAccount(scanner,cpf);
+                        System.out.println("Account Opening.");
+                    } else {
+                        System.out.println("CPF has a account. Please, make a login.");
+                    }
+                    return;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option! Please try again.");
+            }
+        }
+    }
+
+    public static void bankMenu(Scanner scanner) {
+        boolean running = true;
+
+        while (running) {
+            System.out.println("========= Bank Menu =========");
+            System.out.println("|| 1. Deposit              ||");
+            System.out.println("|| 2. Withdraw             ||");
+            System.out.println("|| 3. Check Balance        ||");
+            System.out.println("|| 4. Transfer             ||");
+            System.out.println("|| 5. Bank Statement       ||");
+            System.out.println("|| 0. Exit                 ||");
+            System.out.println("=============================");
+            System.out.print("Choose an option: ");
+
+            int option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    // ToDo...
+                    System.out.println("Deposit.");
+                    break;
+                case 2:
+                    // ToDo...
+                    System.out.println("Withdraw.");
+                    break;
+                case 3:
+                    // ToDo...
+                    System.out.println("Check Balance.");
+                    break;
+                case 4:
+                    // ToDo...
+                    System.out.println("Transfer.");
+                    break;
+                case 5:
+                    // ToDo...
+                    System.out.println("Bank Statement.");
+                    break;
+                case 0:
+                    // ToDo...
+                    System.out.println("Exiting...");
+                    running = false;
+                    return;
+                default:
+                    System.out.println("Invalid option! Please try again.");
+            }
+        }
+    }
+
+    private static void openAccount(Scanner scanner, String cpf) throws ParseException {
+        AccountConfiguration accountConfiguration = new AccountConfiguration();
+        PhoneVerification phoneVerification = new PhoneVerification();
+        DateVerification dateVerification = new DateVerification();
+        DBManipulation dbManipulation = new DBManipulation();
+
+        scanner.nextLine();
+
+        System.out.print("Complete Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Phone Number: ");
+        String digitedPhone = scanner.next();
+
+        if(!phoneVerification.verificationValidFormat(digitedPhone)){
+            System.out.println("Invalid phone number! Please try again.");
+        } else {
+            String phone = phoneVerification.formatPhone(digitedPhone);
+            System.out.print("Birthday Date (dd/MM/yyyy): ");
+            String birthdayDate = scanner.next();
+            Date birthdaySQL = accountConfiguration.dateFormatStringtoSQL(birthdayDate);
+            LocalDateTime today = LocalDateTime.now();
+
+            if(dateVerification.verificationBirthday(birthdaySQL, today)){
+                System.out.println("\nSelect type account: ");
+                System.out.println("1 - Current Account");
+                System.out.println("2 - Savings Account");
+                System.out.println("3 - Salary Account");
+                System.out.print("Option: ");
+
+                int typeAccount = scanner.nextInt();
+
+                System.out.print("Please, digit a password: ");
+                String password = scanner.next();
+
+                System.out.println("\nChecking your password...\n");
+
+                System.out.print("You want to make a initial deposit? (y/n) ");
+                char deposit = scanner.next().charAt(0);
+
+                System.out.println("\nCreating your Account...\n");
+                int numberAccount = accountConfiguration.createNumberAccount();
+
+                float value = 0;
+
+                if (deposit == 'y') {
+                    System.out.print("Enter with a deposit value: ");
+                    value = scanner.nextFloat();
+                }
+
+                //Inserção do cliente no banco
+                BankCustomer bankCustomer = new BankCustomer(name,birthdaySQL,cpf,phone);
+                int idBankCustomer = dbManipulation.insertBankCustomer(bankCustomer);
+                bankCustomer.setId(idBankCustomer);
+
+                //Inserção da conta no banco
+                Account account = new Account(bankCustomer.getName(),bankCustomer.getDate(),bankCustomer.getCpf(),
+                        bankCustomer.getPhone(),numberAccount,typeAccount,password,value);
+                dbManipulation.insertAccount(account,idBankCustomer);
+
+                //Inserção do banco
+                int bankId = dbManipulation.insertBank(account);
+            } else {
+                System.out.println("Please, check your date birthday and try again.");
+            }
+        }
+
+    }
+
+    /*private static void accountOpening(Scanner scan, String cpf) throws ParseException {
         AccountConfiguration accountConfiguration = new AccountConfiguration();
         PhoneVerification phoneVerification = new PhoneVerification();
         DateVerification dateVerification = new DateVerification();
@@ -119,7 +281,7 @@ public class Main {
             LocalDateTime today = LocalDateTime.now();
 
             if (dateVerification.verificationBirthday(dataNascimentoSQL, today)){
-                System.out.println("\nHow tyoe of account you want to open?: ");
+                System.out.println("\nHow type of account you want to open?: ");
                 System.out.println("1 - Current Account");
                 System.out.println("2 - Savings Account");
                 System.out.println("3 - Salary Account");
@@ -303,7 +465,7 @@ public class Main {
                 } while (true);
             }
         }
-    }
+    }*/
 }
 
         /*System.out.print("Digite sua Data de Nascimento (dd/MM/yyyy): ");
