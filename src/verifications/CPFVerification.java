@@ -123,8 +123,17 @@ public class CPFVerification {
             cont--;
         }
 
-        if ((total * 10) % 11 != Integer.parseInt(cpf.substring(10, 10 + 1))) {
-            return false;
+        if ((total * 10) % 11 == 10 || (total * 10) % 11 == 11) {
+            if(Integer.parseInt(cpf.substring(10, 10 + 1)) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            int rest = (total * 10) % 11;
+            if(Integer.parseInt(cpf.substring(10, 10 + 1)) != rest) {
+                return false;
+            }
         }
 
         return true;

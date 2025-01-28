@@ -19,8 +19,6 @@ public class DateVerification {
         int dayBirthday = Integer.parseInt(date.toString().substring(8, 10));
         int actualDay = Integer.parseInt(formatter.format(today).split("-")[2]);
 
-        System.out.println(actualYear - yearBirthday);
-
         if ((actualYear - yearBirthday) < 17) {
             return false;
         } else if ((actualYear - yearBirthday) == 18 && monthBirthday > actualMonth) {

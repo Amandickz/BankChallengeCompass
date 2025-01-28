@@ -17,6 +17,13 @@ public class BankStatement {
         this.date = new Date(System.currentTimeMillis());
     }
 
+    public BankStatement(int id, Date date, int function, float amount) {
+        this.id = id;
+        this.date = date;
+        this.function = function;
+        this.amount = amount;
+    }
+
     public int getId() {
         return id;
     }
