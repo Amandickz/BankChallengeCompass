@@ -11,7 +11,6 @@ import verifications.PhoneVerification;
 import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -117,13 +116,13 @@ public class Main {
                     System.out.print("CPF: ");
                     digitedCpf = scanner.next();
                     cpf = cpfVerification.convertionCPF(digitedCpf);
-                    BankCustomer bankCustomer = db.returnBankCustomer(cpf);
+                    BankCustomer bankCustomer = db.returnBankCustomerCPF(cpf);
                     if(bankCustomer == null) {
                         System.out.println("CPF does not account. Please open your account first.");
                     } else {
                         System.out.print("Password: ");
                         String password = scanner.next();
-                        Account account = db.returnAccountCostumer(bankCustomer);
+                        Account account = db.returnAccount(bankCustomer);
                         if(account == null) {
                             System.out.println("Account doesn't localizated. Please try again.");
                         } else {
@@ -176,6 +175,7 @@ public class Main {
 
             switch (option) {
                 case 1:
+                    System.out.println("Deposit.");
                     System.out.print("Digit the amount to deposit: ");
                     amount = scanner.nextFloat();
                     if(account.deposit(amount)) {
@@ -187,6 +187,7 @@ public class Main {
                     System.out.println("Deposit ok!");
                     break;
                 case 2:
+                    System.out.println("Withdraw.");
                     System.out.print("Digit the amount to withdraw: ");
                     amount = scanner.nextFloat();
                     if (bank.getAccount().withdraw(amount)){
@@ -205,8 +206,73 @@ public class Main {
                     System.out.println("Actual Balance: R$ " + dbManipulation.returnBalance(account.getId()));
                     break;
                 case 4:
-                    // ToDo...
                     System.out.println("Transfer.");
+                    System.out.println("Type of transfer: ");
+                    System.out.println("1 - Bank Account to Bank Account");
+                    System.out.println("2 - Bank Account to CPF (external account)");
+                    System.out.print("Choose an option: ");
+                    int optionTransfer = scanner.nextInt();
+
+                    if(optionTransfer == 1) {
+                        System.out.print("Enter with a account number to transfer: ");
+                        int numberAccountTransfer = scanner.nextInt();
+
+                        if (dbManipulation.verificationAccount(numberAccountTransfer)) {
+                            System.out.println("Digit the amount to transfer: ");
+                            amount = scanner.nextFloat();
+                            if(bank.getAccount().getBalance() >= amount){
+                                int bankCustomerId = dbManipulation.returnBankCustomerId(numberAccountTransfer);
+                                BankCustomer bankCustomerTransfer = dbManipulation.returnBankCustomer(bankCustomerId);
+                                Account accountTransfer = dbManipulation.returnAccount(bankCustomerTransfer);
+                                Bank bankTransfer = dbManipulation.returnBankAccount(accountTransfer);
+                                System.out.print("Confirm the transfer: \n" +
+                                        "R$ " + amount +
+                                        bank.getAccount().getName() + " to " + accountTransfer.getName() + "\n (y/n): ");
+                                char confirm = scanner.next().charAt(0);
+                                if (confirm == 'y') {
+                                    if (bank.getAccount().internalTransfer(bank,bankTransfer,amount)){
+                                        dbManipulation.alterBalanceAccount(bank.getAccount());
+                                        dbManipulation.alterBalanceAccount(accountTransfer);
+                                        BankStatement bankStatement = new BankStatement(3,amount);
+                                        int idBankStatement = dbManipulation.insertBankStatement(bankStatement);
+                                        dbManipulation.insertTransaction(bank.getId(),idBankStatement);
+                                        BankStatement bankStatementTransfer = new BankStatement(4,amount);
+                                        int idBankStatementTransfer = dbManipulation.insertBankStatement(bankStatementTransfer);
+                                        dbManipulation.insertTransaction(bankTransfer.getId(),idBankStatementTransfer);
+                                        System.out.println("Bank Account transfer ok!");
+                                    } else {
+                                        System.out.println("\nSomenthing wrong. Please try again.");
+                                    }
+                                }
+                            } else {
+                                System.out.print("\nSomenthing wrong. Check your balance and try again!\n");
+                            }
+                        } else {
+                            System.out.println("\nAccount don't found. Please try again.");
+                        }
+                    } else {
+                        System.out.print("Enter CPF to transfer: ");
+                        String cpf = scanner.next();
+                        System.out.println("Digit the amount to transfer: ");
+                        amount = scanner.nextFloat();
+
+                        if(bank.getAccount().getBalance() >= amount){
+                            System.out.print("Confirm you transfer with \n" +
+                                    cpf + " of value R$ " + amount + "(y/n) ");
+                            char confirm = scanner.next().charAt(0);
+                            if (confirm == 'y') {
+                                if (bank.getAccount().externalTransfer(bank,amount)){
+                                    dbManipulation.alterBalanceAccount(bank.getAccount());
+                                    BankStatement bankStatement = new BankStatement(3,amount);
+                                    int idBankStatement = dbManipulation.insertBankStatement(bankStatement);
+                                    dbManipulation.insertTransaction(bank.getId(),idBankStatement);
+                                    System.out.println("Bank Account transfer ok!");
+                                } else {
+                                    System.out.println("\nSomenthing wrong. Please try again.");
+                                }
+                            }
+                        }
+                    }
                     break;
                 case 5:
                     // ToDo...

@@ -203,7 +203,7 @@ public class DBManipulation {
         }
     }
 
-    public ArrayList<BankCustomer> returnBankCustomer() {
+    public ArrayList<BankCustomer> returnBankCustomerCPF() {
         ArrayList<BankCustomer> bankCustomers = new ArrayList<>();
 
         Connection conn = null;
@@ -441,7 +441,7 @@ public class DBManipulation {
         return false;
     }
 
-    public BankCustomer returnBankCustomer(String cpf) {
+    public BankCustomer returnBankCustomerCPF(String cpf) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -475,7 +475,41 @@ public class DBManipulation {
         return null;
     }
 
-    public Account returnAccountCostumer(BankCustomer bankCustomer) {
+    public BankCustomer returnBankCustomer(int id) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from bankcustomer where id = '" + id + "'");
+
+            while (rs.next()){
+                String name = rs.getString("name");
+                Date birthdayDate = rs.getDate("date");
+                String cpf = rs.getString("cpf");
+                String phone = rs.getString("phone");
+
+                BankCustomer bankCustomer = new BankCustomer(id,name,birthdayDate,cpf,phone);
+
+                return bankCustomer;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return null;
+    }
+
+    public Account returnAccount(BankCustomer bankCustomer) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -568,6 +602,63 @@ public class DBManipulation {
 
         return balance;
     }
+
+    public boolean verificationAccount(int numberAccount) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from account where numberAccount = '" + numberAccount + "'");
+
+            if (rs.next()) {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return false;
+    }
+
+    public int returnBankCustomerId(int numberAccount) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from account where numberAccount = '" + numberAccount + "'");
+
+            while (rs.next()) {
+                int idBankCustomer = rs.getInt("BankCustomer_id");
+
+                return idBankCustomer;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return 0;
+    }
+
 
 
 }
