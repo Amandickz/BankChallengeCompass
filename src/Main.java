@@ -98,6 +98,7 @@ public class Main {
     public static void mainMenu(Scanner scanner) throws ParseException {
         CPFVerification cpfVerification = new CPFVerification();
         DBManipulation db = new DBManipulation();
+        String digitedCpf, cpf;
         boolean running = true;
 
         while (running) {
@@ -112,12 +113,30 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    bankMenu(scanner);
+                    System.out.println("\nLogin Account");
+                    System.out.print("CPF: ");
+                    digitedCpf = scanner.next();
+                    cpf = cpfVerification.convertionCPF(digitedCpf);
+                    BankCustomer bankCustomer = db.returnBankCustomer(cpf);
+                    if(bankCustomer == null) {
+                        System.out.println("CPF does not account. Please open your account first.");
+                    } else {
+                        System.out.print("Password: ");
+                        String password = scanner.next();
+                        Account account = db.returnAccountCostumer(bankCustomer);
+                        if(account == null) {
+                            System.out.println("Account doesn't localizated. Please try again.");
+                        } else {
+                            if(account.getPassword().equals(password)) {
+                                bankMenu(scanner);
+                            }
+                        }
+                    }
                     return;
                 case 2:
                     System.out.print("Digit your CPF: ");
-                    String digitedCpf = scanner.next();
-                    String cpf = cpfVerification.convertionCPF(digitedCpf);
+                    digitedCpf = scanner.next();
+                    cpf = cpfVerification.convertionCPF(digitedCpf);
                     if(db.foundCPF(cpf)){
                         openAccount(scanner,cpf);
                         System.out.println("Account Opening.");
