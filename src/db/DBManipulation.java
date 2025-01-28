@@ -1,8 +1,6 @@
 package db;
 
-import classes.Account;
-import classes.Bank;
-import classes.BankCustomer;
+import classes.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -130,8 +128,95 @@ public class DBManipulation {
         return id;
     }
 
-    public void insertBankStatement(){
+    public int insertBankStatement(BankStatement bankStatement, int idBank){
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        int id = 0;
 
+        try{
+            conn = DB.getConnection();
+
+            pstmt = conn.prepareStatement(
+                    "INSERT INTO bankstatement" +
+                            "(date, fuction, amount)" +
+                            "VALUES" +
+                            "(?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+
+            pstmt.setDate(1, bankStatement.getDate());
+            pstmt.setInt(2, bankStatement.getFunction());
+            pstmt.setFloat(3, bankStatement.getAmount());
+
+            int rollsAffected = pstmt.executeUpdate();
+
+            if(rollsAffected > 0){
+                ResultSet rs = pstmt.getGeneratedKeys();
+                while (rs.next()){
+                    id = rs.getInt(1);
+                    System.out.println("Done! ID = " + id);
+                }
+
+                pstmt = conn.prepareStatement(
+                        "INSERT INTO transitions" +
+                                "(Bank_id, BankStatement_id)" +
+                                "VALUES" +
+                                "(?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+
+                pstmt.setInt(1, idBank);
+                pstmt.setInt(2, id);
+
+                rollsAffected = pstmt.executeUpdate();
+
+            } else {
+                System.out.println("No rown affected!");
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        } finally {
+            DB.closeStatement(pstmt);
+            DB.closeConnection();
+        }
+
+        return id;
+    }
+
+    public void insertTransaction(int BankId, int BankStatementId){
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        int id = 0;
+
+        try{
+            conn = DB.getConnection();
+
+            pstmt = conn.prepareStatement(
+                    "INSERT INTO transitions" +
+                            "(Bank_id, BankStatement_id)" +
+                            "VALUES" +
+                            "(?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+
+            pstmt.setInt(1, BankId);
+            pstmt.setInt(2, BankStatementId);
+
+            int rollsAffected = pstmt.executeUpdate();
+
+            if(rollsAffected > 0){
+                System.out.println("Done! Rolls Affected = " + rollsAffected);
+            } else {
+                System.out.println("No rown affected!");
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        } finally {
+            DB.closeStatement(pstmt);
+            DB.closeConnection();
+        }
     }
 
     public ArrayList<BankCustomer> returnBankCustomer() {
@@ -247,6 +332,100 @@ public class DBManipulation {
         }
 
         return banks;
+    }
+
+    public ArrayList<BankStatement> returnBankStatement(BankStatement bankStatement) {
+        ArrayList<BankStatement> bankStatements = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from bankstatement");
+
+            while(rs.next()){
+                int id = rs.getInt("id");
+                Date date = rs.getDate("date");
+                int function = rs.getInt("function");
+                float amount = rs.getFloat("amount");
+
+                bankStatements.add(new BankStatement(id,date,function,amount));
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return bankStatements;
+
+    }
+
+    public ArrayList<Transitions> returnTransitions(){
+        ArrayList<Transitions> transitions = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from transitions");
+
+            while(rs.next()){
+                int idBank = rs.getInt("Bank_id");
+                int idBankStatement = rs.getInt("BankStatement_id");
+
+                transitions.add(new Transitions(idBank,idBankStatement));
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return transitions;
+    }
+
+    public void alterBalanceAccount(Account account) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try{
+            conn = DB.getConnection();
+
+            pstmt = conn.prepareStatement("UPDATE account" +
+                    " SET banlance = ?" +
+                    " WHERE" +
+                    " (numberAccount = ?)");
+
+
+            pstmt.setFloat(1,account.getBalance());
+            pstmt.setInt(2,account.getNumberAccount());
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            System.out.println("Done! Rows affected: " + rowsAffected);
+        } catch (SQLException e){
+            e.printStackTrace();
+        } finally {
+            DB.closeStatement(pstmt);
+            DB.closeConnection();
+        }
     }
 
 }
