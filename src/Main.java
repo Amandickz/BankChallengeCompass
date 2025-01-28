@@ -98,6 +98,7 @@ public class Main {
     public static void mainMenu(Scanner scanner) throws ParseException {
         CPFVerification cpfVerification = new CPFVerification();
         DBManipulation db = new DBManipulation();
+        String digitedCpf, cpf;
         boolean running = true;
 
         while (running) {
@@ -112,12 +113,23 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    bankMenu(scanner);
+                    System.out.println("CPF: ");
+                    digitedCpf = scanner.next();
+                    cpf = cpfVerification.convertionCPF(digitedCpf);
+                    BankCustomer bankCustomer = db.returnBankCustomer(cpf);
+                    //System.out.println(bankCustomer);
+                    if(bankCustomer == null) {
+                        System.out.println("CPF does not account. Please open your account first.");
+                    } else {
+                        Account account = db.returnAccountCostumer(bankCustomer);
+                        //System.out.println(account);
+                        bankMenu(scanner);
+                    }
                     return;
                 case 2:
                     System.out.print("Digit your CPF: ");
-                    String digitedCpf = scanner.next();
-                    String cpf = cpfVerification.convertionCPF(digitedCpf);
+                    digitedCpf = scanner.next();
+                    cpf = cpfVerification.convertionCPF(digitedCpf);
                     if(db.foundCPF(cpf)){
                         openAccount(scanner,cpf);
                         System.out.println("Account Opening.");

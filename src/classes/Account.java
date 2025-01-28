@@ -17,6 +17,14 @@ public class Account extends BankCustomer{
         this.balance = balance;
     }
 
+    public Account(int id, String name, Date date, String cpf, String phone, int numberAccount, int type, String password, float balance) {
+        super(id, name, date, cpf, phone);
+        this.numberAccount = numberAccount;
+        this.type = type;
+        this.password = password;
+        this.balance = balance;
+    }
+
     public int getNumberAccount() {
         return numberAccount;
     }
@@ -36,11 +44,10 @@ public class Account extends BankCustomer{
     @Override
     public String toString() {
         return "Account{" +
-                ", numberAccount=" + numberAccount +
+                "numberAccount=" + numberAccount +
                 ", type=" + type +
                 ", password='" + password + '\'' +
                 ", balance=" + balance +
-                ", customer=" + super.toString() +
                 '}';
     }
 

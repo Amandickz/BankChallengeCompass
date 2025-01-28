@@ -455,4 +455,73 @@ public class DBManipulation {
         return false;
     }
 
+    public BankCustomer returnBankCustomer(String cpf) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from bankcustomer where cpf = '" + cpf + "'");
+
+            while (rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                Date birthdayDate = rs.getDate("date");
+                String phone = rs.getString("phone");
+
+                BankCustomer bankCustomer = new BankCustomer(id,name,birthdayDate,cpf,phone);
+
+                return bankCustomer;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return null;
+    }
+
+    public Account returnAccountCostumer(BankCustomer bankCustomer) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from account where BankCustomer_id = '" + bankCustomer.getId() + "'");
+
+            while (rs.next()){
+                int numberAccount = rs.getInt("numberAccount");
+                int type = rs.getInt("type");
+                String password = rs.getString("password");
+                float balance = rs.getFloat("balance");
+
+                Account account = new Account(bankCustomer.getId(),bankCustomer.getName(),bankCustomer.getDate(),bankCustomer.getCpf(),
+                        bankCustomer.getPhone(),numberAccount,type,password,balance);
+
+                return account;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return null;
+    }
+
 }
