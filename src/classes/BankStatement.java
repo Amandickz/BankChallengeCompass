@@ -7,20 +7,26 @@ public class BankStatement {
 
     private int id;
     private Date date;
-    private int function;
+    private int type;
     private float amount;
 
-    public BankStatement(int id, int function, float amount) {
-        this.id = id;
-        this.function = function;
-        this.amount = amountCheck(amount, function);
+    public BankStatement(int type, float amount) {
+        this.type = type;
+        this.amount = amount;
         this.date = new Date(System.currentTimeMillis());
     }
 
-    public BankStatement(int id, Date date, int function, float amount) {
+    public BankStatement(int id, int type, float amount) {
+        this.id = id;
+        this.type = type;
+        this.amount = amountCheck(amount, type);
+        this.date = new Date(System.currentTimeMillis());
+    }
+
+    public BankStatement(int id, Date date, int type, float amount) {
         this.id = id;
         this.date = date;
-        this.function = function;
+        this.type = type;
         this.amount = amount;
     }
 
@@ -32,8 +38,8 @@ public class BankStatement {
         return date;
     }
 
-    public int getFunction() {
-        return function;
+    public int getType() {
+        return type;
     }
 
     public float getAmount() {
@@ -45,7 +51,7 @@ public class BankStatement {
         return "BankStatement{" +
                 "id=" + id +
                 ", date=" + date +
-                ", function=" + function +
+                ", function=" + type +
                 ", amount=" + amount +
                 '}';
     }
