@@ -68,6 +68,30 @@ public class BankStatement {
         return sdf.format(date);
     }
 
+    public String extract(BankStatement bankStatement) {
+        String extract = "";
+
+        if(bankStatement.getType() == 1){
+            extract = "Date: " + bankStatement.dataConvertida(bankStatement.getDate())
+            + " | Type: Deposit "
+            + "| Amount: " + bankStatement.getAmount();
+        } else if (bankStatement.getType() == 2) {
+            extract = "Date: " + bankStatement.dataConvertida(bankStatement.getDate())
+                    + " | Type: Withdraw "
+                    + "| Amount: " + (bankStatement.getAmount() * -1);
+        } else if (bankStatement.getType() == 3) {
+            extract = "Date: " + bankStatement.dataConvertida(bankStatement.getDate())
+                    + " | Type: Transfer "
+                    + "| Amount: " + (bankStatement.getAmount() * -1);
+        } else {
+            extract = "Date: " + bankStatement.dataConvertida(bankStatement.getDate())
+                    + " | Type: Recived Transfer "
+                    + "| Amount: " + (bankStatement.getAmount());
+        }
+
+        return extract;
+    }
+
 }
 
 /*tipos de padrão de function:
