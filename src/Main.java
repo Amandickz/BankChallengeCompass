@@ -113,17 +113,24 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    System.out.println("CPF: ");
+                    System.out.println("\nLogin Account");
+                    System.out.print("CPF: ");
                     digitedCpf = scanner.next();
                     cpf = cpfVerification.convertionCPF(digitedCpf);
                     BankCustomer bankCustomer = db.returnBankCustomer(cpf);
-                    //System.out.println(bankCustomer);
                     if(bankCustomer == null) {
                         System.out.println("CPF does not account. Please open your account first.");
                     } else {
+                        System.out.print("Password: ");
+                        String password = scanner.next();
                         Account account = db.returnAccountCostumer(bankCustomer);
-                        //System.out.println(account);
-                        bankMenu(scanner);
+                        if(account == null) {
+                            System.out.println("Account doesn't localizated. Please try again.");
+                        } else {
+                            if(account.getPassword().equals(password)) {
+                                bankMenu(scanner);
+                            }
+                        }
                     }
                     return;
                 case 2:
