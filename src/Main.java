@@ -128,7 +128,7 @@ public class Main {
                             System.out.println("Account doesn't localizated. Please try again.");
                         } else {
                             if(account.getPassword().equals(password)) {
-                                bankMenu(scanner);
+                                bankMenu(scanner, account);
                             }
                         }
                     }
@@ -153,11 +153,14 @@ public class Main {
         }
     }
 
-    public static void bankMenu(Scanner scanner) {
+    public static void bankMenu(Scanner scanner, Account account) {
+        DBManipulation dbManipulation = new DBManipulation();
+        Bank bank = dbManipulation.returnBankAccount(account);
         boolean running = true;
+        float amount = 0;
 
         while (running) {
-            System.out.println("========= Bank Menu =========");
+            System.out.println("\n========= Bank Menu =========");
             System.out.println("|| 1. Deposit              ||");
             System.out.println("|| 2. Withdraw             ||");
             System.out.println("|| 3. Check Balance        ||");
@@ -172,7 +175,15 @@ public class Main {
             switch (option) {
                 case 1:
                     // ToDo...
-                    System.out.println("Deposit.");
+                    System.out.print("Digit the amount to deposit: ");
+                    amount = scanner.nextFloat();
+                    if(account.deposit(amount)) {
+                        dbManipulation.alterBalanceAccount(account);
+                        BankStatement bankStatement = new BankStatement(1,amount);
+                        int idBankStatement = dbManipulation.insertBankStatement(bankStatement);
+                        dbManipulation.insertTransaction(bank.getId(),idBankStatement);
+                    }
+                    System.out.println("Deposit ok!");
                     break;
                 case 2:
                     // ToDo...
@@ -191,7 +202,6 @@ public class Main {
                     System.out.println("Bank Statement.");
                     break;
                 case 0:
-                    // ToDo...
                     System.out.println("Exiting...");
                     running = false;
                     return;
@@ -270,95 +280,7 @@ public class Main {
 
     }
 
-    /*private static void accountOpening(Scanner scan, String cpf) throws ParseException {
-        AccountConfiguration accountConfiguration = new AccountConfiguration();
-        PhoneVerification phoneVerification = new PhoneVerification();
-        DateVerification dateVerification = new DateVerification();
-        int contPhone = 0;
-        String digitedPhone;
-
-        System.out.print("Enter with your complete name: ");
-        String nome = scan.nextLine();
-
-        do{
-            System.out.print("Enter your phone number: ");
-            digitedPhone = scan.next();
-            if (phoneVerification.verificationValidFormat(digitedPhone)){
-                break;
-            } else {
-                contPhone++;
-            }
-        } while (contPhone < 3 );
-
-        if (contPhone != 3) {
-            String phone = phoneVerification.formatPhone(digitedPhone);
-
-            System.out.print("Enter with your Birthday (dd/MM/yyyy): ");
-            String dataNascimento = scan.next();
-
-            Date dataNascimentoSQL = accountConfiguration.dateFormatStringtoSQL(dataNascimento);
-            LocalDateTime today = LocalDateTime.now();
-
-            if (dateVerification.verificationBirthday(dataNascimentoSQL, today)){
-                System.out.println("\nHow type of account you want to open?: ");
-                System.out.println("1 - Current Account");
-                System.out.println("2 - Savings Account");
-                System.out.println("3 - Salary Account");
-                System.out.print("Option: ");
-                int opConta = scan.nextInt();
-
-                System.out.println("\nCreating your Account...\n");
-
-                int numberAccount = accountConfiguration.createNumberAccount();
-
-                System.out.print("Please, digit a password: ");
-                String password = scan.next();
-
-                System.out.println("\nChecking your password...\n");
-
-                System.out.print("You want to make a initial deposit? (y/n) ");
-                char deposit = scan.next().charAt(0);
-
-                float value = 0;
-
-                if (deposit == 'y') {
-                    System.out.print("Enter with a deposit value: ");
-                    value = scan.nextFloat();
-                }
-
-                int idAccount = 0;
-
-                if (bankListAccounts.isEmpty()) {
-                    idAccount = 1;
-                } else {
-                    for (Bank b : bankListAccounts) {
-                        idAccount = b.getAccount().getId() + 1;
-                    }
-                }
-
-                Account account = new Account(nome, dataNascimentoSQL, cpf, phone, numberAccount, opConta, password, value);
-                bankListAccounts.add(new Bank(idAccount, account));
-
-                System.out.println("\n");
-
-                for (Bank b : bankListAccounts) {
-                    System.out.println(b);
-                }
-
-                System.out.println("\n");
-            } else {
-                System.out.println("Please, check your date birthday and try again.");
-            }
-
-        } else if (contPhone == 3) {
-            System.out.println("You tried to digit your phone 3 times.\n" +
-                    "Please check your number and try again.");
-        } else {
-            System.out.println("Somenthing wrong was happened!\n");
-        }
-    }
-
-    private static void loginMenu(Scanner scan, int idBank) {
+    /*private static void loginMenu(Scanner scan, int idBank) {
 
         for (Bank bank : bankListAccounts) {
             if (bank.getId() == idBank) {

@@ -128,7 +128,7 @@ public class DBManipulation {
         return id;
     }
 
-    public int insertBankStatement(BankStatement bankStatement, int idBank){
+    public int insertBankStatement(BankStatement bankStatement){
         Connection conn = null;
         PreparedStatement pstmt = null;
         int id = 0;
@@ -137,16 +137,16 @@ public class DBManipulation {
             conn = DB.getConnection();
 
             pstmt = conn.prepareStatement(
-                    "INSERT INTO bankstatement" +
-                            "(date, fuction, amount)" +
+                    "INSERT INTO bankmoviment" +
+                            "(dateTransition, type, amount)" +
                             "VALUES" +
                             "(?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            pstmt.setDate(1, bankStatement.getDate());
-            pstmt.setInt(2, bankStatement.getFunction());
-            pstmt.setFloat(3, bankStatement.getAmount());
+            pstmt.setDate(1,bankStatement.getDate());
+            pstmt.setInt(2,bankStatement.getType());
+            pstmt.setFloat(3,bankStatement.getAmount());
 
             int rollsAffected = pstmt.executeUpdate();
 
@@ -154,22 +154,8 @@ public class DBManipulation {
                 ResultSet rs = pstmt.getGeneratedKeys();
                 while (rs.next()){
                     id = rs.getInt(1);
-                    System.out.println("Done! ID = " + id);
                 }
-
-                pstmt = conn.prepareStatement(
-                        "INSERT INTO transitions" +
-                                "(Bank_id, BankStatement_id)" +
-                                "VALUES" +
-                                "(?, ?)",
-                        Statement.RETURN_GENERATED_KEYS
-                );
-
-                pstmt.setInt(1, idBank);
-                pstmt.setInt(2, id);
-
-                rollsAffected = pstmt.executeUpdate();
-
+                return id;
             } else {
                 System.out.println("No rown affected!");
             }
@@ -194,20 +180,18 @@ public class DBManipulation {
 
             pstmt = conn.prepareStatement(
                     "INSERT INTO transitions" +
-                            "(Bank_id, BankStatement_id)" +
+                            "(BankMoviment_id, Bank_id)" +
                             "VALUES" +
                             "(?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            pstmt.setInt(1, BankId);
-            pstmt.setInt(2, BankStatementId);
+            pstmt.setInt(1, BankStatementId);
+            pstmt.setInt(2, BankId);
 
             int rollsAffected = pstmt.executeUpdate();
 
-            if(rollsAffected > 0){
-                System.out.println("Done! Rolls Affected = " + rollsAffected);
-            } else {
+            if(rollsAffected != 0){
                 System.out.println("No rown affected!");
             }
 
@@ -409,7 +393,7 @@ public class DBManipulation {
             conn = DB.getConnection();
 
             pstmt = conn.prepareStatement("UPDATE account" +
-                    " SET banlance = ?" +
+                    " SET balance = ?" +
                     " WHERE" +
                     " (numberAccount = ?)");
 
@@ -419,7 +403,9 @@ public class DBManipulation {
 
             int rowsAffected = pstmt.executeUpdate();
 
-            System.out.println("Done! Rows affected: " + rowsAffected);
+            if(rowsAffected > 0){
+                System.out.println("Done! Rows affected: " + rowsAffected);
+            }
         } catch (SQLException e){
             e.printStackTrace();
         } finally {
@@ -523,5 +509,36 @@ public class DBManipulation {
 
         return null;
     }
+
+    public Bank returnBankAccount(Account account) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from bank where accountNumber = '" + account.getNumberAccount() + "'");
+
+            while (rs.next()){
+                int id = rs.getInt("id");
+
+                Bank bank = new Bank(id,account);
+                return bank;
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return null;
+    }
+
 
 }
