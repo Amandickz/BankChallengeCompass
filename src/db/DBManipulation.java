@@ -540,5 +540,34 @@ public class DBManipulation {
         return null;
     }
 
+    public float returnBalance(int idBankCustomer) {
+        float balance = 0;
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select * from account where BankCustomer_id = '" + idBankCustomer + "'");
+
+            while (rs.next()){
+                balance = rs.getInt("balance");
+            }
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeResultSet(rs);
+            DB.closeStatement(stmt);
+            DB.closeConnection();
+        }
+
+        return balance;
+    }
+
 
 }

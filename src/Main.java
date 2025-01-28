@@ -172,6 +172,8 @@ public class Main {
 
             int option = scanner.nextInt();
 
+            System.out.print("\n");
+
             switch (option) {
                 case 1:
                     System.out.print("Digit the amount to deposit: ");
@@ -199,8 +201,8 @@ public class Main {
                     }
                     break;
                 case 3:
-                    // ToDo...
                     System.out.println("Check Balance.");
+                    System.out.println("Actual Balance: R$ " + dbManipulation.returnBalance(account.getId()));
                     break;
                 case 4:
                     // ToDo...
